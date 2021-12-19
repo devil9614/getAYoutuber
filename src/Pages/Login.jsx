@@ -1,113 +1,181 @@
-import { Button, TextField } from '@mui/material'
-import React, { useEffect, useState } from 'react'
-import styled from 'styled-components'
-import {auth} from '../Firebase'
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
+import { Button, TextField } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import { auth } from "../Firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 import registerPoster from "../Assets/registerPoster.png";
-import Footer from '../Components/Footer';
-
-
+import Footer from "../Components/Footer";
+import {ReactComponent as LoginSVG} from '../Assets/login.svg'
 const Login = () => {
-    const navigate = useNavigate();
-    const [email,setEmail] = useState("")
-    const [password,setPassword] = useState("")
-    const [user,loading,error] = useAuthState(auth)
-    useEffect(() => {
-        if(loading){
-            return 
-        }
-        if(user){
-            console.log("perfect login")
-        }
-        if (error){
-            console.log(error)
-        }
-    },[loading,user,error])
-    const handleSubmit = async () => {
-        try{
-            const user = await signInWithEmailAndPassword(auth,email,password)
-            console.log(user)
-        } catch(err){
-            console.log(err.message)
-        }
-        
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [user, loading, error] = useAuthState(auth);
+  useEffect(() => {
+    if (loading) {
+      return;
     }
-    return (
-        <>
-        <Container>
-            <FormSection>
-            <Header>Welcome</Header>
-                <TextField style={{ margin: 10, background: "#CF806F", borderRadius: "1000px" }} placeholder = "username" value = {email} onChange = {(e) => {
-                    setEmail(e.target.value)
-                }} />
-                <TextField style={{ margin: 10, background: "#CF806F", borderRadius: "1000px" }} placeholder = "password" value = {password} onChange = {(e) => {
-                    setPassword(e.target.value) 
-                }} />
-                <Button variant = "contained" onClick = {handleSubmit} style={{ margin: 10 }}>Log in</Button>
-                <ColoredLine color={"black"} />
-                <span style={{ padding: 10,cursor:"pointer" }} onClick={() => navigate("/register")}>New here? <a style={{ color: "blue" }}>create a account</a></span>
-
-            </FormSection>
-            <PicSection>
-            <img
-          src={registerPoster}
-          alt="register Poster"
-          width="450px"
-          height="auto"
-        />
-            </PicSection>
+    if (user) {
+      console.log("perfect login");
+    }
+    if (error) {
+      console.log(error);
+    }
+  }, [loading, user, error]);
+  const handleSubmit = async () => {
+    try {
+      const user = await signInWithEmailAndPassword(auth, email, password);
+      console.log(user);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+  return (
+    <MainContainer>
+      <LoginSVG style = {{position:"absolute",left:50}} className="svg"/>
+      <MainScreen className="mainScreen">
+        <BlueSection className="blueScreen"></BlueSection>
+        <Container className="container">
+          <Header className="heading">Welcome Back</Header>
+          <SubHeading className="subHeading">Sign in to use GetAYoutuber</SubHeading>
+          <FormSection className="formSection">
+            <TextField
+              variant="standard"
+              className = "textInput"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+            />
+            <TextField
+              variant="standard"
+              className = "textInput"
+              placeholder="Password"
+              type="password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
+            />
+            <a style={{ color: "#5F3BE3", cursor: "pointer" }}>
+              Forget Password ?
+            </a>
+            <Button
+              variant="contained"
+              onClick={handleSubmit}
+              className = "submitButton"
+            >
+              Log in
+            </Button>
+          </FormSection>
+          <ColoredLine color={"black"} />
+          <span>
+            Don't have a account ?{" "}
+            <a style={{ color: "#5F3BE3", cursor: "pointer" }} onClick={() => navigate("/register")}>Sign up</a>
+          </span>
         </Container>
-        <Footer/>
-        </>
-    )
+      </MainScreen>
+
+      <Footer />
+    </MainContainer>
+  );
+};
+
+const MainContainer = styled.div`
+.line{
+  width:45vw;
 }
+@media only screen and (max-width: 970px) {
+  .svg{
+    display:none;
+  }
+}
+@media only screen and (max-width: 540px) {
+  .blueScreen{
+    display:none;
+  }
+  .mainScreen,.container{
+    width:100vw;
+  }
+  .heading, .subHeading, .formSection{
+    width:90vw;
+  }
+  .line{
+    width:90vw;
+  }
+}
+`
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  width: 100vw;
-  max-width: 100vw;
-  height: 90vh;
-  max-height: 90vh;
-  overflow: hidden;
-`;
-const FormSection = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 60vw;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+`;
+
+const SubHeading = styled.div`
+  width: 35vw;
+  padding-bottom: 60px;
+  margin-top:-40px;
+`;
+const BlueSection = styled.div`
+  background-color: #5f3be3;
+  width: 40vw;
+  height: 100vh;
+`;
+const MainScreen = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+`;
+const FormSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 20px;
+  justify-content: center;
   .MuiOutlinedInput-root {
     height: 45px;
-    border-radius: 50px;
+    width: 40vw;
     border: none;
     color: white;
   }
   .MuiButton-root {
-    border-radius: 50px;
-    background-color: #deb100;
-    color: black;
+    background-color: #5f3be3;
+    color: #fff;
+  }
+  .textInput, .submitButton{
+    width:30vw;
+  }
+  @media only screen and (max-width: 540px){
+    .textInput, .submitButton{
+      width:90vw;
+    }
   }
 `;
-const PicSection = styled.div`
-  width: 450px;
-  margin-left: 60px;
-`;
+
 const Header = styled.p`
-  color: black;
-  font-size: 2rem;
+  width: 35vw;
+  color: #5f3be3;
+  font-size: 45px;
 `;
 const ColoredLine = ({ color }) => (
-    <hr
-      style={{
-        color: color,
-        backgroundColor: color,
-        height: 0.5,
-        width: "100%",
-      }}
-    />
-  );
-export default Login
+  <hr
+    style={{
+      color: color,
+      backgroundColor: "black",
+      height: 0.2,
+      margin: 30,
+    }}
+    className="line"
+  />
+);
+export default Login;

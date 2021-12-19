@@ -1,5 +1,10 @@
 import { initializeApp } from "firebase/app";
 import {getAuth} from 'firebase/auth'
+import { doc, getFirestore, setDoc } from "firebase/firestore";
+import { addDoc, collection } from "firebase/firestore"; 
+// import 'firebase/firestore
+
+
 const firebaseConfig = {
   apiKey: "AIzaSyA2jRScDgIf6H6EnDf7BYUlNjkyUi4ZGJw",
   authDomain: "getar-f1ed9.firebaseapp.com",
@@ -31,6 +36,42 @@ const sendPasswordResetEmail = async (email) => {
 const logout = () => {
   auth.signOut();
 };
+export const db = getFirestore()
+export const createUserDocument = async ({user, additionalData}) => {
+  if (!user) return;
+
+  const userRef = doc(db, "users", user.uid);
+
+  setDoc(userRef,{fullname:additionalData,testing : true})
+  
+  // const snapshot = await userRef.get();
+
+  // if (!snapshot.exists) {
+  //   const { email } = user;
+  //   const { fullName } = additionalData;
+
+  //   try {
+  //     await userRef.set({
+  //       fullName,
+  //       email,
+  //       createdAt: new Date(),
+  //     });
+  //   } catch (error) {
+  //     console.log('Error in creating user', error);
+  //   }
+  // }
+};
+export const addData = async ({userid,additionalData}) => {
+  try{
+    const docRef = await setDoc(collection(db,"users",userid),additionalData)
+    console.log(docRef?.id)
+  }
+  catch(e){
+    console.error(e)
+  }
+}
+
+
 // const registerWithEmailAndPassword = async (name, email, password) => {
 //   try {
 //     const res = await auth.createUserWithEmailAndPassword(email, password);
