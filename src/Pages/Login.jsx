@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import registerPoster from "../Assets/registerPoster.png";
 import Footer from "../Components/Footer";
 import {ReactComponent as LoginSVG} from '../Assets/login.svg'
+import toast, { Toaster } from "react-hot-toast";
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -29,11 +30,12 @@ const Login = () => {
       const user = await signInWithEmailAndPassword(auth, email, password);
       console.log(user);
     } catch (err) {
-      console.log(err.message);
+      toast(err.message);
     }
   };
   return (
     <MainContainer>
+      <Toaster/>
       <LoginSVG style = {{position:"absolute",left:50}} className="svg"/>
       <MainScreen className="mainScreen">
         <BlueSection className="blueScreen"></BlueSection>
