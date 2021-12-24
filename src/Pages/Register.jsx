@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Button,
   FormControlLabel,
   FormGroup,
@@ -7,7 +8,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { auth, createUserDocument, db } from "../Firebase";
+import { auth, createUserDocument, db, storage } from "../Firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import registerPoster from "../Assets/registerPoster.png";
@@ -15,8 +16,9 @@ import { useNavigate } from "react-router-dom";
 import Footer from "../Components/Footer";
 import { addData } from "../Firebase";
 import { ReactComponent as SignUpSVG } from "../Assets/signup.svg";
-import { addDoc, doc, setDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, setDoc, updateDoc } from "firebase/firestore";
 import toast, { Toaster } from "react-hot-toast";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -30,10 +32,13 @@ const Register = () => {
     location: "",
     catagory: "",
     createdAt: "",
+    avatar: "",
   });
   const [formPage, setFormPage] = useState(1);
   const [password, setPassword] = useState("");
+  const [preview, setPreview] = useState();
   const [user, loading, error] = useAuthState(auth);
+  const [rawFile, setRawFile] = useState();
   useEffect(() => {
     if (loading) {
       return;
@@ -53,20 +58,96 @@ const Register = () => {
         password
       );
       console.log(user);
-      // const userDoc = doc(db,"users",user.uid)
-      await setDoc(doc(db, "users", user.uid), otherInfo);
+      await uploadFiles({files:rawFile,userId:user.uid});
+      const userDoc = doc(db,"users",user.uid)
+      await setDoc(userDoc,otherInfo)
+      // await getData(rawFile)
     } catch (err) {
       toast(err.message);
-      console.log(err.message)
+      console.log(err.message);
     }
   };
-  const handleChange = (e) => {
+  const getData = async (files) => {
+    // setLoading(true);
+    const up = await uploadFiles(files)
+    const usersCollectionRef = collection(db, "users");
+    const data = await getDocs(usersCollectionRef);
+    console.log(data)
+    // setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    // setLoading(false);
+  };
+   const handleChange = (e) => {
     const { name, value } = e.target;
     setOtherInfo((prevState) => ({
       ...prevState,
       [name]: value,
     }));
   };
+  const handleImageUpload = (e) => {
+    e.preventDefault();
+    setRawFile(e.target.files[0]);
+    const pre = URL.createObjectURL(e.target.files[0]);
+    setPreview(pre);
+  };
+  const uploadFiles = async ({file,userId}) => {
+    //
+    if (!file) return;
+    // const sotrageRef = ref(storage, `files/${file.name}`);
+    // const uploadTask = uploadBytesResumable(sotrageRef, file);
+
+    const uploadFile = storage.ref("users",file.name).put(file)
+    uploadFile.on(
+      "state_changed",
+      (snapshot) => {
+        const prog = Math.round(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        );
+      },
+      (err) => {
+        console.log(err)
+      },
+      () => {
+        storage.ref("users").child(file.name).getDownloadURL().then((imageURL) => {
+          db.collection("users").doc(userId).set({
+            fullName:otherInfo.fullName,
+            ytLink:otherInfo.ytLink,
+            bio:otherInfo.bio,
+            igLink:otherInfo.igLink,
+            isYoutuber:otherInfo.isYoutuber,
+            location:otherInfo.location,
+            catagory:otherInfo.catagory,
+            createdAt:new Date(),
+            avatar:imageURL
+          })
+        })
+      }
+    )
+
+  //   uploadTask.on(
+  //     "state_changed",
+  //     (snapshot) => {
+  //       const prog = Math.round(
+  //         (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+  //       );
+  //     },
+  //     (error) => console.log(error),
+  //     () => {
+  //       // getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+  //       //   console.log("File available at", downloadURL);
+  //       //   setOtherInfo((prevState) => ({
+  //       //     ...prevState,
+  //       //     avatar: downloadURL,
+  //       //   }));
+  //       storage.ref("users").child(data.)
+  //         // const avatarRef = doc(db,"users",userId)
+  //         // await updateDoc(avatarRef,{
+  //         //   avatar:downloadURL
+  //         // })
+  //       });
+  //     }
+  //   );
+  };
+  console.log(otherInfo)
   return (
     <MainContainer>
       <Toaster position="top-center" reverseOrder={false} />
@@ -116,6 +197,25 @@ const Register = () => {
           )}
           {formPage === 2 && (
             <FormSection>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                }}
+              >
+                <Avatar src={preview} sx={{ width: 80, height: 80 }}></Avatar>
+                <label className="custom-file-upload">
+                  <input
+                    type="file"
+                    accept="images/*"
+                    hidden
+                    onChange={(e) => handleImageUpload(e)}
+                  />
+                  <i className="fa fa-cloud-upload" /> Upload Profile Picture
+                </label>
+              </div>
               <TextField
                 // value = {}
                 variant="standard"
@@ -152,7 +252,7 @@ const Register = () => {
                 onChange={handleChange}
                 name="igLink"
               />
-              <FormGroup>
+              <FormGroup style={{ alignItems: "flex-end" }}>
                 <FormControlLabel
                   label="Are you a youtuber ? "
                   labelPlacement="start"
@@ -263,7 +363,7 @@ const MainScreen = styled.div`
 const FormSection = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
   gap: 20px;
   justify-content: center;
   .MuiOutlinedInput-root {

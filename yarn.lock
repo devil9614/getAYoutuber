@@ -7896,6 +7896,11 @@ lodash.camelcase@^4.3.0:
   resolved "https://registry.yarnpkg.com/lodash.camelcase/-/lodash.camelcase-4.3.0.tgz#b28aa6288a2b9fc651035c7711f65ab6190331a6"
   integrity sha1-soqmKIorn8ZRA1x3EfZathkDMaY=
 
+lodash.debounce@^4.0.8:
+  version "4.0.8"
+  resolved "https://registry.yarnpkg.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
+  integrity sha1-gteb/zCmfEAF/9XiUVMArZyk168=
+
 lodash.memoize@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/lodash.memoize/-/lodash.memoize-4.1.2.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
@@ -9783,7 +9788,7 @@ prompts@2.4.0, prompts@^2.0.1:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.5.0, prop-types@^15.6.0, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -10022,10 +10027,32 @@ react-error-overlay@^6.0.9:
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-6.0.9.tgz#3c743010c9359608c375ecd6bc76f35d93995b0a"
   integrity sha512-nQTTcUu+ATDbrSD1BZHr5kgSD4oF8OFjxun8uAaL8RwPBacGBNPf/yAuVVdx17N8XNzRDMrZ9XcKZHCjPW+9ew==
 
-react-firebase-hooks@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/react-firebase-hooks/-/react-firebase-hooks-4.0.1.tgz#5c2483b0a240eb05cb9467cb1c07b2c721bef6c2"
-  integrity sha512-JinNQRMzu905KWSCWppOZTUeOJArXvWdcTAsamjgDX/ZMF9QH5d+BZpnapEaIL70ifCDe/Ax9wzn9vlAufIymw==
+react-firebase-hooks@3.0.4:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/react-firebase-hooks/-/react-firebase-hooks-3.0.4.tgz#2185357d2bd6f7292552bc65f2459bbf9364e673"
+  integrity sha512-eqhj8O5t/9nzGS/DfCGQX9goqbxTP2T/qrY2B13s4rx/VIJ4Bx3WnZgqxEVA0Y/mWZBh7gOlXSPdRGbxBq5d8g==
+
+react-geocode@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/react-geocode/-/react-geocode-0.2.3.tgz#e27fa3f212a2629b2b2bb2a3a325a12b802b2dae"
+  integrity sha512-sIpbgmn1IUzAxO4haOZ6jeeFnMD8ya9PC38yiNrmJ9vPWbvAO2D/2yfCBzZjGZVUm4PRzKAc0KghXfaEnug0TQ==
+  dependencies:
+    regenerator-runtime "^0.13.3"
+
+react-google-autocomplete@^2.6.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/react-google-autocomplete/-/react-google-autocomplete-2.6.1.tgz#84538cacd910ec2c47aac351b9866d3a6fe178b6"
+  integrity sha512-E5gVt2Z6deTpLRORSx+5Uvr5mDWAHCfc89pJfkiTmUz+mYr7CJEfig/9+HkkbGxo9ZDpyewBqqjbnER4LaofMA==
+  dependencies:
+    lodash.debounce "^4.0.8"
+    prop-types "^15.5.0"
+
+react-google-map@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/react-google-map/-/react-google-map-3.1.1.tgz#e47e42287ef6bc7510422fbfd5014ab2b4a0d1b4"
+  integrity sha512-8pcddNPqQloBUugqu98z+Mb/gOhY56hKi9sWi3vdbSgOjKL8cMHAEW8sKj3caUysNY89+dEEInyOIAgC7ZUVag==
+  dependencies:
+    prop-types "^15.6.0"
 
 react-hot-toast@^2.1.1:
   version "2.1.1"
@@ -10258,6 +10285,11 @@ regenerator-runtime@^0.11.0:
   version "0.11.1"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.11.1.tgz#be05ad7f9bf7d22e056f9726cee5017fbf19e2e9"
   integrity sha512-MguG95oij0fC3QV3URf4V2SDYGJhJnJGqvIIgdECeODCT98wSWDAJ94SSuVpYQUoTcGUIL6L4yNB7j1DFFHSBg==
+
+regenerator-runtime@^0.13.3:
+  version "0.13.9"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.9.tgz#8925742a98ffd90814988d7566ad30ca3b263b52"
+  integrity sha512-p3VT+cOEgxFsRRA9X4lkI1E+k2/CtnKtU4gcxyaCUreilL/vqI6CdZ3wxVUx3UOUg+gnUOQQcRI7BmSI656MYA==
 
 regenerator-runtime@^0.13.4, regenerator-runtime@^0.13.7:
   version "0.13.7"

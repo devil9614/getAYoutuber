@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { auth } from "../Firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import registerPoster from "../Assets/registerPoster.png";
 import Footer from "../Components/Footer";
 import {ReactComponent as LoginSVG} from '../Assets/login.svg'
@@ -29,6 +29,7 @@ const Login = () => {
     try {
       const user = await signInWithEmailAndPassword(auth, email, password);
       console.log(user);
+      navigate("/")
     } catch (err) {
       toast(err.message);
     }

@@ -3,14 +3,16 @@ import Login from "./Pages/Login";
 import Register from "./Pages/Register";
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'
 import HomePageWithLogin from "./Pages/HomePageWithLogin";
+import DashboardRoute from "./Routes/DashboardRoute";
+import LoginRoute from "./Routes/LoginRoute";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path = "/" exact element = {<HomePageWithLogin/>}/>
-        <Route path = "/login" element = {<Login/>}/>
-        <Route path = "/register" element = {<Register/>}/>
+        <Route path = "/" element = {<DashboardRoute><HomePageWithLogin/></DashboardRoute>} />
+        <Route path = "/login" element = {<LoginRoute><Login/></LoginRoute>}/>
+        <Route path = "/register" element = {<LoginRoute><Register/></LoginRoute>}/>
       </Routes>
     </Router>
   );

@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import {getAuth} from 'firebase/auth'
 import { doc, getFirestore, setDoc } from "firebase/firestore";
 import { addDoc, collection } from "firebase/firestore"; 
+import { getStorage } from "firebase/storage";
 // import 'firebase/firestore
 
 
@@ -16,6 +17,8 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app)
+export const db = getFirestore()
+export const storage = getStorage(app)
 const signInWithEmailAndPassword = async (email, password) => {
   try {
     await auth.signInWithEmailAndPassword(email, password);
@@ -36,7 +39,7 @@ const sendPasswordResetEmail = async (email) => {
 const logout = () => {
   auth.signOut();
 };
-export const db = getFirestore()
+
 export const createUserDocument = async ({user, additionalData}) => {
   if (!user) return;
 
