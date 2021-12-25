@@ -1,8 +1,13 @@
 import {
   Avatar,
+  Box,
   Button,
+  FormControl,
   FormControlLabel,
   FormGroup,
+  InputLabel,
+  MenuItem,
+  Select,
   Switch,
   TextField,
 } from "@mui/material";
@@ -20,6 +25,29 @@ import { addDoc, collection, doc, getDocs, setDoc, updateDoc } from "firebase/fi
 import toast, { Toaster } from "react-hot-toast";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
+const Catagories = [
+  "Animation",
+  "ASMR",
+  "Beauty",
+  "Comedy",
+  "Conspiracy",
+  "Cooking",
+  "Design/Art",
+  "DIY",
+  "Educational",
+  "Family",
+  "Fashion",
+  "Gaming",
+  "Health and Fitness",
+  "Lifestyle",
+  "Music and Dance",
+  "Pranks and Challanges",
+  "Sports",
+  "Technical",
+  "Travel",
+  "Vlogger",
+];
+
 const Register = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -31,7 +59,7 @@ const Register = () => {
     isYoutuber: false,
     location: "",
     catagory: "",
-    createdAt: "",
+    createdAt: new Date(),
     avatar: "",
   });
   const [formPage, setFormPage] = useState(1);
@@ -206,14 +234,14 @@ const Register = () => {
                 }}
               >
                 <Avatar src={preview} sx={{ width: 80, height: 80 }}></Avatar>
-                <label className="custom-file-upload">
+                <label className="custom-file-upload" style={{cursor:"pointer"}}>
                   <input
                     type="file"
                     accept="images/*"
                     hidden
                     onChange={(e) => handleImageUpload(e)}
                   />
-                  <i className="fa fa-cloud-upload" /> Upload Profile Picture
+                  <i className="fa fa-cloud-upload"/> Upload Profile Picture
                 </label>
               </div>
               <TextField
@@ -238,20 +266,40 @@ const Register = () => {
                 variant="standard"
                 type="url"
                 className="textInput"
+                label="Instagram Link"
+                onChange={handleChange}
+                name="igLink"
+              />
+              <TextField
+                variant="standard"
+                type="url"
+                className="textInput"
                 label="Youtube Channel Link"
                 disabled={otherInfo?.isYoutuber ? false : true}
                 onChange={handleChange}
                 name="ytLink"
                 required={otherInfo?.isYoutuber ? true : false}
               />
-              <TextField
-                variant="standard"
-                type="url"
-                className="textInput"
-                label="Instagram Link"
-                onChange={handleChange}
-                name="igLink"
-              />
+              <Box sx={{ minWidth: 120 }}>
+          <FormControl >
+            <InputLabel id="demo-simple-select-label">Catagory</InputLabel>
+            <Select
+              sx={{height:50,width:150}}
+              label="Catagory"
+              name="catagory"
+              onChange={handleChange}
+              className="catagory"
+              required={otherInfo?.isYoutuber ? true : false}
+              disabled={otherInfo?.isYoutuber ? false : true}
+            >
+              {Catagories.map((catagory) => (
+                <MenuItem value={catagory} key={catagory}>
+                  {catagory}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
               <FormGroup style={{ alignItems: "flex-end" }}>
                 <FormControlLabel
                   label="Are you a youtuber ? "
@@ -336,7 +384,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   width: 60vw;
   height: 100vh;
   max-height: 100vh;
@@ -367,7 +415,6 @@ const FormSection = styled.div`
   gap: 20px;
   justify-content: center;
   .MuiOutlinedInput-root {
-    height: 45px;
     width: 40vw;
     border: none;
     color: white;
@@ -376,7 +423,8 @@ const FormSection = styled.div`
     color: #fff;
   }
   .textInput,
-  .submitButton {
+  .submitButton,
+  .catagory {
     width: 30vw;
   }
   .css-5ryogn-MuiButtonBase-root-MuiSwitch-switchBase,
@@ -385,7 +433,8 @@ const FormSection = styled.div`
   }
   @media only screen and (max-width: 540px) {
     .textInput,
-    .submitButton {
+    .submitButton,
+    .catagory {
       width: 90vw;
     }
   }
