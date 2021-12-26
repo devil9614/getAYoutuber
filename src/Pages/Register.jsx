@@ -83,6 +83,7 @@ const Register = () => {
     catagory: "",
     createdAt: new Date(),
     avatar: "",
+    verified : ""
   });
   const [formPage, setFormPage] = useState(1);
   const [password, setPassword] = useState("");

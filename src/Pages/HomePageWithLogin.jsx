@@ -11,6 +11,7 @@ import {
   Grid,
   InputLabel,
   MenuItem,
+  Paper,
   Select,
   TextField,
   Typography,
@@ -25,6 +26,13 @@ import Autocomplete from "react-google-autocomplete";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import BlueTick from "../Assets/blueTick.png";
 const YOUR_GOOGLE_MAPS_API_KEY = "AIzaSyB52w1QzyZDCk5IzyjLhEUAr5eJhB3IzCM";
+
+const Item = styled(Paper)(({ theme }) => ({
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+}));
 
 const SmallAvatar = styled(Avatar)(({ theme }) => ({
   width: 12,
@@ -71,7 +79,7 @@ const HomePageWithLogin = () => {
       const data = await getDocs(usersCollectionRef);
       const q = query(usersCollectionRef, where("catagory", "==", catagory));
       const querySnapshot = await getDocs(q);
-      querySnapshot.docs.map((doc) => (console.log(doc.data())))
+      querySnapshot.docs.map((doc) => (console.log(doc.data(),doc.id)))
       setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
       setLoading(false);
     };
@@ -114,6 +122,7 @@ const HomePageWithLogin = () => {
           display: "flex",
           gap: 20,
           alignItems: "center",
+          flexWrap:"wrap"
         }}
       >
         <TextField
@@ -154,12 +163,13 @@ const HomePageWithLogin = () => {
         >
           {users.map((user, i) => (
             <Grid item xs={3} key={i}>
-              <Card
-                sx={{ maxWidth: 345 }}
+              <Item>
+                <Card
+                sx={{ width:300,height:250 }}
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "center",
+                  justifyContent: "flex-start",
                   flexDirection: "column",
                 }}
               >
@@ -189,7 +199,7 @@ const HomePageWithLogin = () => {
                       >
                         <Avatar
                           src={user?.avatar}
-                          sx={{ height: 56, width: 56 }}
+                          sx={{ height: 80, width: 80 }}
                         >
                           {user?.fullName[0]}
                         </Avatar>
@@ -210,7 +220,14 @@ const HomePageWithLogin = () => {
                       component="div"
                       align="center"
                     >
-                      {user?.location} {user?.catagory}
+                      {user?.location}
+                    </Typography>
+                    <Typography
+                      gutterBottom
+                      component="div"
+                      align="center"
+                    >
+                      <i>{user?.catagory}{" "}{user?.catagory?"Youtuber":""}</i>
                     </Typography>
                     <Typography
                       variant="body2"
@@ -222,6 +239,8 @@ const HomePageWithLogin = () => {
                   </CardContent>
                 </CardActionArea>
               </Card>
+              </Item>
+              
             </Grid>
           ))}
         </Grid>
