@@ -71,10 +71,7 @@ const HomePageWithLogin = () => {
       const data = await getDocs(usersCollectionRef);
       const q = query(usersCollectionRef, where("catagory", "==", catagory));
       const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((doc) => {
-        // doc.data() is never undefined for query doc snapshots
-        console.log(doc.id, " => ", doc.data());
-      });
+      querySnapshot.docs.map((doc) => (console.log(doc.data())))
       setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
       setLoading(false);
     };

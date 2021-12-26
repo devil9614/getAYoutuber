@@ -10,7 +10,17 @@ import {
   Select,
   Switch,
   TextField,
+  Modal,
+  Backdrop,
+  Fade,
+  Typography,
+  Dialog,
+  Slide,
+  DialogContent,
+  DialogTitle,
+  DialogActions
 } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { auth, createUserDocument, db, storage } from "../Firebase";
@@ -47,7 +57,19 @@ const Catagories = [
   "Travel",
   "Vlogger",
 ];
-
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4,
+};
 const Register = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -67,6 +89,9 @@ const Register = () => {
   const [preview, setPreview] = useState();
   const [user, loading, error] = useAuthState(auth);
   const [rawFile, setRawFile] = useState();
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   useEffect(() => {
     if (loading) {
       return;
@@ -86,7 +111,7 @@ const Register = () => {
         password
       );
       console.log(user);
-      await uploadFiles({files:rawFile,userId:user.uid});
+      // await uploadFiles({files:rawFile,userId:user.uid});
       const userDoc = doc(db,"users",user.uid)
       await setDoc(userDoc,otherInfo)
       // await getData(rawFile)
@@ -95,15 +120,15 @@ const Register = () => {
       console.log(err.message);
     }
   };
-  const getData = async (files) => {
-    // setLoading(true);
-    const up = await uploadFiles(files)
-    const usersCollectionRef = collection(db, "users");
-    const data = await getDocs(usersCollectionRef);
-    console.log(data)
-    // setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-    // setLoading(false);
-  };
+  // const getData = async (files) => {
+  //   // setLoading(true);
+  //   const up = await uploadFiles(files)
+  //   const usersCollectionRef = collection(db, "users");
+  //   const data = await getDocs(usersCollectionRef);
+  //   console.log(data)
+  //   // setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+  //   // setLoading(false);
+  // };
    const handleChange = (e) => {
     const { name, value } = e.target;
     setOtherInfo((prevState) => ({
@@ -117,67 +142,111 @@ const Register = () => {
     const pre = URL.createObjectURL(e.target.files[0]);
     setPreview(pre);
   };
-  const uploadFiles = async ({file,userId}) => {
+  const handleUploadImage = async () => {
     //
-    if (!file) return;
-    // const sotrageRef = ref(storage, `files/${file.name}`);
-    // const uploadTask = uploadBytesResumable(sotrageRef, file);
+    if (!rawFile) return;
+    // setLoading(true)
+    const sotrageRef = ref(storage, `files/${rawFile.name}`);
+    const uploadTask = uploadBytesResumable(sotrageRef, rawFile);
 
-    const uploadFile = storage.ref("users",file.name).put(file)
-    uploadFile.on(
+    // const uploadFile = storage.ref("users",file.name).put(file)
+    // uploadFile.on(
+    //   "state_changed",
+    //   (snapshot) => {
+    //     const prog = Math.round(
+    //       (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+    //     );
+    //   },
+    //   (err) => {
+    //     console.log(err)
+    //   },
+    //   () => {
+    //     storage.ref("users").child(file.name).getDownloadURL().then((imageURL) => {
+    //       db.collection("users").doc(userId).set({
+    //         fullName:otherInfo.fullName,
+    //         ytLink:otherInfo.ytLink,
+    //         bio:otherInfo.bio,
+    //         igLink:otherInfo.igLink,
+    //         isYoutuber:otherInfo.isYoutuber,
+    //         location:otherInfo.location,
+    //         catagory:otherInfo.catagory,
+    //         createdAt:new Date(),
+    //         avatar:imageURL
+    //       })
+    //     })
+    //   }
+    // )
+
+    uploadTask.on(
       "state_changed",
       (snapshot) => {
         const prog = Math.round(
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100
         );
       },
-      (err) => {
-        console.log(err)
-      },
+      (error) => console.log(error),
       () => {
-        storage.ref("users").child(file.name).getDownloadURL().then((imageURL) => {
-          db.collection("users").doc(userId).set({
-            fullName:otherInfo.fullName,
-            ytLink:otherInfo.ytLink,
-            bio:otherInfo.bio,
-            igLink:otherInfo.igLink,
-            isYoutuber:otherInfo.isYoutuber,
-            location:otherInfo.location,
-            catagory:otherInfo.catagory,
-            createdAt:new Date(),
-            avatar:imageURL
-          })
-        })
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          console.log("File available at", downloadURL);
+          setOtherInfo((prevState) => ({
+            ...prevState,
+            avatar: downloadURL,
+          }));
+          setOpen(false)
+        });
       }
-    )
-
-  //   uploadTask.on(
-  //     "state_changed",
-  //     (snapshot) => {
-  //       const prog = Math.round(
-  //         (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-  //       );
-  //     },
-  //     (error) => console.log(error),
-  //     () => {
-  //       // getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-  //       //   console.log("File available at", downloadURL);
-  //       //   setOtherInfo((prevState) => ({
-  //       //     ...prevState,
-  //       //     avatar: downloadURL,
-  //       //   }));
-  //       storage.ref("users").child(data.)
-  //         // const avatarRef = doc(db,"users",userId)
-  //         // await updateDoc(avatarRef,{
-  //         //   avatar:downloadURL
-  //         // })
-  //       });
-  //     }
-  //   );
+    );
+    
   };
   console.log(otherInfo)
   return (
     <MainContainer>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <DialogTitle >
+          <div style = {{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <i style = {{paddingRight:50}}>Upload Your Profile Picture</i>
+          <CloseIcon onClick = {handleClose} style = {{cursor:"pointer"}}></CloseIcon>
+          </div>
+        </DialogTitle>
+        <DialogContent>
+          <Fade in={open}>
+          <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                }}
+              >
+                <Avatar src={preview} sx={{ width: 80, height: 80,marginBottom:"30px" }}></Avatar>
+                <label className="custom-file-upload" style={{cursor:"pointer"}}>
+                  <input
+                    type="file"
+                    accept="images/*"
+                    hidden
+                    onChange={(e) => handleImageUpload(e)}
+                  />
+                  <ImageUploadButton className="fa fa-cloud-upload">{!preview?"Select Profile Picture":"Change Profile Picture"}</ImageUploadButton>
+                </label>
+              </div>
+        </Fade>
+        </DialogContent>
+        <DialogActions>
+                {preview?
+                <>
+                <Button variant ="outlined" color = "info" >Cancel</Button>
+                <Button variant = "contained" color = "primary" onClick = {handleUploadImage}>Upload</Button>
+                </>:null}
+        </DialogActions>
+      </Dialog>
       <Toaster position="top-center" reverseOrder={false} />
       <SignUpSVG style={{ position: "absolute", left: 25 }} className="svg" />
       <MainScreen className="mainScreen">
@@ -231,10 +300,13 @@ const Register = () => {
                   alignItems: "center",
                   justifyContent: "center",
                   flexDirection: "column",
+                  cursor:"pointer"
                 }}
+                onClick = {handleOpen}
               >
                 <Avatar src={preview} sx={{ width: 80, height: 80 }}></Avatar>
-                <label className="custom-file-upload" style={{cursor:"pointer"}}>
+                <i>click here to upload image</i>
+                {/* <label className="custom-file-upload" style={{cursor:"pointer"}}>
                   <input
                     type="file"
                     accept="images/*"
@@ -242,7 +314,7 @@ const Register = () => {
                     onChange={(e) => handleImageUpload(e)}
                   />
                   <i className="fa fa-cloud-upload"/> Upload Profile Picture
-                </label>
+                </label> */}
               </div>
               <TextField
                 // value = {}
@@ -285,15 +357,16 @@ const Register = () => {
             <InputLabel id="demo-simple-select-label">Catagory</InputLabel>
             <Select
               sx={{height:50,width:150}}
+              value = {otherInfo.catagory}
               label="Catagory"
               name="catagory"
               onChange={handleChange}
               className="catagory"
-              required={otherInfo?.isYoutuber ? true : false}
+              required
               disabled={otherInfo?.isYoutuber ? false : true}
             >
               {Catagories.map((catagory) => (
-                <MenuItem value={catagory} key={catagory}>
+                <MenuItem value={catagory} key={catagory} sx = {{color:"black"}}>
                   {catagory}
                 </MenuItem>
               ))}
@@ -326,7 +399,14 @@ const Register = () => {
               </Button>
               <Button
                 variant="contained"
-                onClick={handleSubmit}
+                onClick={() =>{
+                  if(otherInfo.fullName && otherInfo.bio && ((otherInfo.isYoutuber)?(otherInfo.ytLink && otherInfo.catagory):true)){
+                    handleSubmit()
+                  }
+                  else{
+                    console.log(otherInfo.fullName && otherInfo.bio && ((otherInfo.isYoutuber)?(otherInfo.ytLink && otherInfo.catagory):true))
+                  }
+                }}
                 className="submitButton"
                 style={{ backgroundColor: "#5f3be3" }}
               >
@@ -380,6 +460,12 @@ const MainContainer = styled.div`
   }
 `;
 
+const ImageUploadButton = styled.span`
+  padding:10px;
+  background-color:#5f3be3;
+  color:#fff;
+  margin-top:20px;
+`
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -408,7 +494,7 @@ const MainScreen = styled.div`
   align-items: center;
   justify-content: center;
 `;
-const FormSection = styled.div`
+const FormSection = styled.form`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -430,6 +516,9 @@ const FormSection = styled.div`
   .css-5ryogn-MuiButtonBase-root-MuiSwitch-switchBase,
   .Mui-checked {
     backgruond-color: #5f3be3;
+  }
+  .css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input, .MuiSelect-select {
+    color:black;
   }
   @media only screen and (max-width: 540px) {
     .textInput,
