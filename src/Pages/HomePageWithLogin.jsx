@@ -25,14 +25,15 @@ import { auth, db, storage } from "../Firebase";
 import Autocomplete from "react-google-autocomplete";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import BlueTick from "../Assets/blueTick.png";
+import { Navigate, useNavigate } from "react-router-dom";
 const YOUR_GOOGLE_MAPS_API_KEY = "AIzaSyB52w1QzyZDCk5IzyjLhEUAr5eJhB3IzCM";
 
-const Item = styled(Paper)(({ theme }) => ({
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: 'center',
-  color: theme.palette.text.secondary,
-}));
+// const Item = styled(Paper)(({ theme }) => ({
+//   ...theme.typography.body2,
+//   padding: theme.spacing(1),
+//   textAlign: 'center',
+//   color: theme.palette.text.secondary,
+// }));
 
 const SmallAvatar = styled(Avatar)(({ theme }) => ({
   width: 12,
@@ -68,6 +69,7 @@ const HomePageWithLogin = () => {
   const usersCollectionRef = collection(db, "users");
   const [progress, setProgress] = useState(0);
   const [catagory, setCatagory] = useState("");
+  const navigate = useNavigate()
   const formHandler = (e) => {
     e.preventDefault();
     const file = e.target[0].files[0];
@@ -107,7 +109,9 @@ const HomePageWithLogin = () => {
       }
     );
   };
-
+  const handleNaviagateUser = (userId) =>{
+    navigate(`/user/${userId}`)
+  }
   console.log(catagory);
   return (
     <MainContainer>
@@ -163,15 +167,15 @@ const HomePageWithLogin = () => {
         >
           {users.map((user, i) => (
             <Grid item xs={3} key={i}>
-              <Item>
                 <Card
-                sx={{ width:300,height:250 }}
+                sx={{ width:250,height:200 }}
                 style={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "flex-start",
                   flexDirection: "column",
                 }}
+                onClick={() => handleNaviagateUser(user.id)}
               >
                 <CardActionArea>
                   <CardContent>
@@ -229,18 +233,16 @@ const HomePageWithLogin = () => {
                     >
                       <i>{user?.catagory}{" "}{user?.catagory?"Youtuber":""}</i>
                     </Typography>
-                    <Typography
+                    {/* <Typography
                       variant="body2"
                       color="text.secondary"
                       align="center"
                     >
                       {user?.bio}
-                    </Typography>
+                    </Typography> */}
                   </CardContent>
                 </CardActionArea>
               </Card>
-              </Item>
-              
             </Grid>
           ))}
         </Grid>

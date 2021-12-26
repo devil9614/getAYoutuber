@@ -18,9 +18,9 @@ import {
   Slide,
   DialogContent,
   DialogTitle,
-  DialogActions
+  DialogActions,
 } from "@mui/material";
-import CloseIcon from '@mui/icons-material/Close';
+import CloseIcon from "@mui/icons-material/Close";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { auth, createUserDocument, db, storage } from "../Firebase";
@@ -31,7 +31,14 @@ import { useNavigate } from "react-router-dom";
 import Footer from "../Components/Footer";
 import { addData } from "../Firebase";
 import { ReactComponent as SignUpSVG } from "../Assets/signup.svg";
-import { addDoc, collection, doc, getDocs, setDoc, updateDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import toast, { Toaster } from "react-hot-toast";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
@@ -61,12 +68,12 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
   width: 400,
-  bgcolor: 'background.paper',
+  bgcolor: "background.paper",
   boxShadow: 24,
   p: 4,
 };
@@ -83,7 +90,8 @@ const Register = () => {
     catagory: "",
     createdAt: new Date(),
     avatar: "",
-    verified : ""
+    verified: "",
+    email: "",
   });
   const [formPage, setFormPage] = useState(1);
   const [password, setPassword] = useState("");
@@ -113,8 +121,21 @@ const Register = () => {
       );
       console.log(user);
       // await uploadFiles({files:rawFile,userId:user.uid});
-      const userDoc = doc(db,"users",user.uid)
-      await setDoc(userDoc,otherInfo)
+      const userDoc = doc(db, "users", user.uid);
+      await setDoc(userDoc, {
+        fullName: otherInfo.fullName,
+        ytLink: otherInfo.ytLink,
+        bio: otherInfo.bio,
+        igLink: otherInfo.igLink,
+        isYoutuber: otherInfo.isYoutuber,
+        location: otherInfo.location,
+        catagory: otherInfo.catagory,
+        createdAt: new Date(),
+        avatar: otherInfo.avatar,
+        verified: otherInfo.verified,
+        email: otherInfo.email,
+        id:user.uid
+      });
       // await getData(rawFile)
     } catch (err) {
       toast(err.message);
@@ -130,7 +151,7 @@ const Register = () => {
   //   // setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   //   // setLoading(false);
   // };
-   const handleChange = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setOtherInfo((prevState) => ({
       ...prevState,
@@ -193,13 +214,12 @@ const Register = () => {
             ...prevState,
             avatar: downloadURL,
           }));
-          setOpen(false)
+          setOpen(false);
         });
       }
     );
-    
   };
-  console.log(otherInfo)
+  console.log(otherInfo);
   return (
     <MainContainer>
       <Dialog
@@ -211,41 +231,69 @@ const Register = () => {
           timeout: 500,
         }}
       >
-        <DialogTitle >
-          <div style = {{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-          <i style = {{paddingRight:50}}>Upload Your Profile Picture</i>
-          <CloseIcon onClick = {handleClose} style = {{cursor:"pointer"}}></CloseIcon>
+        <DialogTitle>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <i style={{ paddingRight: 50 }}>Upload Your Profile Picture</i>
+            <CloseIcon
+              onClick={handleClose}
+              style={{ cursor: "pointer" }}
+            ></CloseIcon>
           </div>
         </DialogTitle>
         <DialogContent>
           <Fade in={open}>
-          <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexDirection: "column",
-                }}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexDirection: "column",
+              }}
+            >
+              <Avatar
+                src={preview}
+                sx={{ width: 80, height: 80, marginBottom: "30px" }}
+              ></Avatar>
+              <label
+                className="custom-file-upload"
+                style={{ cursor: "pointer" }}
               >
-                <Avatar src={preview} sx={{ width: 80, height: 80,marginBottom:"30px" }}></Avatar>
-                <label className="custom-file-upload" style={{cursor:"pointer"}}>
-                  <input
-                    type="file"
-                    accept="images/*"
-                    hidden
-                    onChange={(e) => handleImageUpload(e)}
-                  />
-                  <ImageUploadButton className="fa fa-cloud-upload">{!preview?"Select Profile Picture":"Change Profile Picture"}</ImageUploadButton>
-                </label>
-              </div>
-        </Fade>
+                <input
+                  type="file"
+                  accept="images/*"
+                  hidden
+                  onChange={(e) => handleImageUpload(e)}
+                />
+                <ImageUploadButton className="fa fa-cloud-upload">
+                  {!preview
+                    ? "Select Profile Picture"
+                    : "Change Profile Picture"}
+                </ImageUploadButton>
+              </label>
+            </div>
+          </Fade>
         </DialogContent>
         <DialogActions>
-                {preview?
-                <>
-                <Button variant ="outlined" color = "info" >Cancel</Button>
-                <Button variant = "contained" color = "primary" onClick = {handleUploadImage}>Upload</Button>
-                </>:null}
+          {preview ? (
+            <>
+              <Button variant="outlined" color="info">
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleUploadImage}
+              >
+                Upload
+              </Button>
+            </>
+          ) : null}
         </DialogActions>
       </Dialog>
       <Toaster position="top-center" reverseOrder={false} />
@@ -264,9 +312,11 @@ const Register = () => {
                 type="email"
                 className="textInput"
                 label="Email"
+                name="email"
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
+                  handleChange(e);
                 }}
               />
               <TextField
@@ -301,9 +351,9 @@ const Register = () => {
                   alignItems: "center",
                   justifyContent: "center",
                   flexDirection: "column",
-                  cursor:"pointer"
+                  cursor: "pointer",
                 }}
-                onClick = {handleOpen}
+                onClick={handleOpen}
               >
                 <Avatar src={preview} sx={{ width: 80, height: 80 }}></Avatar>
                 <i>click here to upload image</i>
@@ -354,26 +404,32 @@ const Register = () => {
                 required={otherInfo?.isYoutuber ? true : false}
               />
               <Box sx={{ minWidth: 120 }}>
-          <FormControl >
-            <InputLabel id="demo-simple-select-label">Catagory</InputLabel>
-            <Select
-              sx={{height:50,width:150}}
-              value = {otherInfo.catagory}
-              label="Catagory"
-              name="catagory"
-              onChange={handleChange}
-              className="catagory"
-              required
-              disabled={otherInfo?.isYoutuber ? false : true}
-            >
-              {Catagories.map((catagory) => (
-                <MenuItem value={catagory} key={catagory} sx = {{color:"black"}}>
-                  {catagory}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
+                <FormControl>
+                  <InputLabel id="demo-simple-select-label">
+                    Catagory
+                  </InputLabel>
+                  <Select
+                    sx={{ height: 50, width: 150 }}
+                    value={otherInfo.catagory}
+                    label="Catagory"
+                    name="catagory"
+                    onChange={handleChange}
+                    className="catagory"
+                    required
+                    disabled={otherInfo?.isYoutuber ? false : true}
+                  >
+                    {Catagories.map((catagory) => (
+                      <MenuItem
+                        value={catagory}
+                        key={catagory}
+                        sx={{ color: "black" }}
+                      >
+                        {catagory}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
               <FormGroup style={{ alignItems: "flex-end" }}>
                 <FormControlLabel
                   label="Are you a youtuber ? "
@@ -400,12 +456,23 @@ const Register = () => {
               </Button>
               <Button
                 variant="contained"
-                onClick={() =>{
-                  if(otherInfo.fullName && otherInfo.bio && ((otherInfo.isYoutuber)?(otherInfo.ytLink && otherInfo.catagory):true)){
-                    handleSubmit()
-                  }
-                  else{
-                    console.log(otherInfo.fullName && otherInfo.bio && ((otherInfo.isYoutuber)?(otherInfo.ytLink && otherInfo.catagory):true))
+                onClick={() => {
+                  if (
+                    otherInfo.fullName &&
+                    otherInfo.bio &&
+                    (otherInfo.isYoutuber
+                      ? otherInfo.ytLink && otherInfo.catagory
+                      : true)
+                  ) {
+                    handleSubmit();
+                  } else {
+                    console.log(
+                      otherInfo.fullName &&
+                        otherInfo.bio &&
+                        (otherInfo.isYoutuber
+                          ? otherInfo.ytLink && otherInfo.catagory
+                          : true)
+                    );
                   }
                 }}
                 className="submitButton"
@@ -462,11 +529,11 @@ const MainContainer = styled.div`
 `;
 
 const ImageUploadButton = styled.span`
-  padding:10px;
-  background-color:#5f3be3;
-  color:#fff;
-  margin-top:20px;
-`
+  padding: 10px;
+  background-color: #5f3be3;
+  color: #fff;
+  margin-top: 20px;
+`;
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -518,8 +585,9 @@ const FormSection = styled.form`
   .Mui-checked {
     backgruond-color: #5f3be3;
   }
-  .css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input, .MuiSelect-select {
-    color:black;
+  .css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input,
+  .MuiSelect-select {
+    color: black;
   }
   @media only screen and (max-width: 540px) {
     .textInput,

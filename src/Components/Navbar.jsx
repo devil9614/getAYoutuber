@@ -15,9 +15,11 @@ import styled from "styled-components";
 import { useRef } from "react";
 import { auth, db } from "../Firebase";
 import { collection, getDocs,doc ,getDoc} from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
+  const navigate = useNavigate()
   const [user, setUser] = useState();
   const usersCollectionRef = doc(db, "users",auth.currentUser.uid);
   useEffect(() => {
@@ -58,6 +60,9 @@ const Navbar = () => {
     } else if (event.key === "Escape") {
       setOpen(false);
     }
+  }
+  const handleVisitAccount = () => {
+    navigate(`/user/${user?.id}`)
   }
 
   // return focus to the button when we transitioned from !open -> open
@@ -124,7 +129,7 @@ const Navbar = () => {
                           onKeyDown={handleListKeyDown}
                         >
                           <MenuItem onClick={handleClose}>Profile</MenuItem>
-                          <MenuItem onClick={handleClose}>My account</MenuItem>
+                          <MenuItem onClick={handleVisitAccount}>My account</MenuItem>
                           <MenuItem onClick={handleSignOut}>Logout</MenuItem>
                         </MenuList>
                       </ClickAwayListener>
